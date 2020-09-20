@@ -94,94 +94,75 @@ const TodoList = () => {
     });
     setOriginData(changeData);
   };
+
+  const filterFun = ({ done, category, search }) => {
+    let filteredData = [...originData];
+    if (done === true || done === false) {
+      filteredData = filteredData.filter((data) => data.completed === done);
+    }
+    if (category) {
+      filteredData = filteredData.filter((data) => data.category === category);
+    }
+
+    if (search) {
+      filteredData = filteredData.filter((data) => data.item.includes(search));
+    }
+    setShowData(filteredData);
+  };
+  const checkFilter = ({ udpatedFilter, both, anyone }) => {
+    const { done, undone } = udpatedFilter;
+    if (done && undone) {
+      if (both) {
+        filterFun(both);
+      } else {
+        setShowData(originData);
+      }
+    } else if (done || undone) {
+      filterFun(anyone);
+    } else {
+      setShowData([]);
+    }
+  };
+
   const handleOnFilterData = (udpatedFilter, type) => {
-    const { category, search, done, undone } = udpatedFilter;
+    const { category, search, done } = udpatedFilter;
     if (type === "showall") {
       if (category === "All") {
-        if (done && undone) {
-          setShowData(originData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) => data.completed === done
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        checkFilter({ udpatedFilter, anyone: { done } });
       } else {
-        if (done && undone) {
-          let filteredData = originData.filter(
-            (data) => data.category === category
-          );
-          setShowData(filteredData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) => data.category === category && data.completed === done
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        checkFilter({
+          udpatedFilter,
+          both: { category },
+          anyone: { category, done },
+        });
       }
     } else if (type === "search") {
       if (category === "All") {
-        if (done && undone) {
-          let filteredData = originData.filter((data) =>
-            data.item.includes(search)
-          );
-          setShowData(filteredData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) => data.completed === done && data.item.includes(search)
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        checkFilter({
+          udpatedFilter,
+          both: { search },
+          anyone: { done, search },
+        });
       } else {
-        if (done && undone) {
-          let filteredData = originData.filter(
-            (data) => data.category === category && data.item.includes(search)
-          );
-          setShowData(filteredData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) =>
-              data.category === category &&
-              data.completed === done &&
-              data.item.includes(search)
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        checkFilter({
+          udpatedFilter,
+          both: { category, search },
+          anyone: { category, done, search },
+        });
       }
     } else {
       if (category === "All") {
-        if (done && undone) {
-          setShowData(originData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) => data.completed === done
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        checkFilter({
+          udpatedFilter,
+          anyone: { done },
+        });
       } else {
-        if (done && undone) {
-          let filteredData = originData.filter(
-            (data) => data.category === category
-          );
-          setShowData(filteredData);
-        } else if (done || undone) {
-          let filteredData = originData.filter(
-            (data) => data.category === category && data.completed === done
-          );
-          setShowData(filteredData);
-        } else {
-          setShowData([]);
-        }
+        console.log("hi");
+        checkFilter({
+          udpatedFilter,
+          both: { category },
+          anyone: { done, category },
+        });
       }
     }
   };
