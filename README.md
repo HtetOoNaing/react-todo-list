@@ -16,4 +16,4 @@
 
 ## Result Demo
 
-![alt text](https://github.com/HtetOoNaing/react-todo-list/blob/master/result.png?raw=true)
+![alt text](https://github.com/HtetOoNaing/react-todo-list/blob/master/src/result.png?raw=true)
