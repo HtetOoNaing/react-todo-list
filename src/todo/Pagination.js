@@ -49,7 +49,7 @@ const Pagination = ({
       </div>
       <div className="px-2 cursor-pointer">
         <p className="text-sm font-bold text-gray-700">
-          {minRow}-{maxRow} of {rowCount}
+          {minRow}-{maxRow > rowCount ? rowCount : maxRow} of {rowCount}
         </p>
       </div>
       <div

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "./Table";
 import Filter from "./Filter";
 import Pagination from "./Pagination";
@@ -61,6 +61,7 @@ const lists = [
 ];
 const rowLimit = 6;
 const TodoList = () => {
+  const [originData, setOriginData] = useState(lists);
   const [showData, setShowData] = useState(lists);
   const [row, setRow] = useState({
     min: 0,
@@ -75,25 +76,118 @@ const TodoList = () => {
   const [filter, setFilter] = useState({
     category: "All",
     search: "",
-    done: "",
-    undone: "",
+    done: true,
+    undone: true,
   });
   const [isModelOpen, setIsModelOpen] = useState(false);
+
+  useEffect(() => {
+    setShowData(originData);
+  }, [originData]);
+
   const handleOnTableCheckboxChange = (id) => {
-    let changeData = showData.map((data) => {
+    let changeData = originData.map((data) => {
       if (data.id === id) {
         data.completed = !data.completed;
       }
       return data;
     });
-    setShowData(changeData);
+    setOriginData(changeData);
   };
-  const handleOnFilterData = () => {
-    
-  }
+  const handleOnFilterData = (udpatedFilter, type) => {
+    const { category, search, done, undone } = udpatedFilter;
+    if (type === "showall") {
+      if (category === "All") {
+        if (done && undone) {
+          setShowData(originData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) => data.completed === done
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      } else {
+        if (done && undone) {
+          let filteredData = originData.filter(
+            (data) => data.category === category
+          );
+          setShowData(filteredData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) => data.category === category && data.completed === done
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      }
+    } else if (type === "search") {
+      if (category === "All") {
+        if (done && undone) {
+          let filteredData = originData.filter((data) =>
+            data.item.includes(search)
+          );
+          setShowData(filteredData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) => data.completed === done && data.item.includes(search)
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      } else {
+        if (done && undone) {
+          let filteredData = originData.filter(
+            (data) => data.category === category && data.item.includes(search)
+          );
+          setShowData(filteredData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) =>
+              data.category === category &&
+              data.completed === done &&
+              data.item.includes(search)
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      }
+    } else {
+      if (category === "All") {
+        if (done && undone) {
+          setShowData(originData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) => data.completed === done
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      } else {
+        if (done && undone) {
+          let filteredData = originData.filter(
+            (data) => data.category === category
+          );
+          setShowData(filteredData);
+        } else if (done || undone) {
+          let filteredData = originData.filter(
+            (data) => data.category === category && data.completed === done
+          );
+          setShowData(filteredData);
+        } else {
+          setShowData([]);
+        }
+      }
+    }
+  };
   const handleOnDelete = (id) => {
-    let filteredData = showData.filter((data) => data.id !== parseInt(id));
-    setShowData(filteredData);
+    let filteredData = originData.filter((data) => data.id !== parseInt(id));
+    setOriginData(filteredData);
   };
   const handleOnEdit = (data) => {
     setNewData(data);
@@ -111,20 +205,20 @@ const TodoList = () => {
   const handleOnAdd = (e) => {
     e.preventDefault();
     const { item, category, completed } = newData;
-    let id = showData[showData.length - 1].id + 1;
-    setShowData([...showData, { id, item, category, completed }]);
+    let id = originData[originData.length - 1].id + 1;
+    setOriginData([...originData, { id, item, category, completed }]);
     closeModel();
   };
   const handleOnUpdate = (e) => {
     e.preventDefault();
     console.log(newData);
-    let newShowData = showData.map((data) => {
+    let newShowData = originData.map((data) => {
       if (data.id === newData.id) {
         data = newData;
       }
       return data;
     });
-    setShowData(newShowData);
+    setOriginData(newShowData);
     closeModel();
   };
   const loadNextData = () => {
@@ -173,7 +267,13 @@ const TodoList = () => {
             Add New
           </button>
         </div>
-        <Filter showData={showData} filter={filter} setFilter={setFilter} />
+        <Filter
+          showData={showData}
+          filter={filter}
+          setFilter={setFilter}
+          handleOnFilterData={handleOnFilterData}
+          categories={[...new Set(originData.map((data) => data.category))]}
+        />
         <div className="bg-white rounded-lg shadow">
           <Table
             showData={showData.slice(row.min, row.max)}

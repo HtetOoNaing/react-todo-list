@@ -1,21 +1,45 @@
 import React from "react";
 
-const Filter = ({ showData, filter, setFilter }) => {
-  let categories = [...new Set(showData.map((data) => data.category))];
+const Filter = ({
+  showData,
+  filter,
+  setFilter,
+  handleOnFilterData,
+  categories,
+}) => {
   const handleOnChange = (e) => {
-    let target = e.target;
-    let { name, value, checked, type } = target;
+    let { name, value, checked, type } = e.target;
     setFilter((filter) => ({
       ...filter,
       [name]: type === "checkbox" ? checked : value,
     }));
-    if (type === "search" && value === "") {
-      console.log("show all data");
+    if (name !== "search") {
+      handleOnFilterData(
+        {
+          ...filter,
+          [name]: type === "checkbox" ? checked : value,
+        },
+        name
+      );
+    } else if (value === "") {
+      handleOnFilterData(
+        {
+          ...filter,
+          [name]: type === "checkbox" ? checked : value,
+        },
+        "showall"
+      );
+    }
+  };
+  const handleOnSearch = (e) => {
+    e.preventDefault();
+    if (filter.search) {
+      handleOnFilterData(filter, "search");
     }
   };
   return (
     <React.Fragment>
-      <form action="">
+      <form onSubmit={handleOnSearch}>
         <div className="flex flex-wrap md:flex-no-wrap items-center -mx-1">
           <div className="w-auto p-1">
             <div className="relative">
@@ -72,24 +96,24 @@ const Filter = ({ showData, filter, setFilter }) => {
           <input
             type="checkbox"
             name="done"
-            value={filter.done}
+            checked={filter.done}
             onChange={handleOnChange}
             id="done"
           />
           <label htmlFor="done" className="text-gray-800 text-sm ml-1">
-            Done
+            Checked
           </label>
         </div>
         <div className="inline-flex items-center ml-3">
           <input
             type="checkbox"
             name="undone"
-            value={filter.undone}
+            checked={filter.undone}
             onChange={handleOnChange}
             id="undone"
           />
           <label htmlFor="undone" className="text-gray-800 text-sm ml-1">
-            Undone
+            Unchecked
           </label>
         </div>
       </div>
