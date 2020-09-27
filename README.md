@@ -1,5 +1,7 @@
 # Todo List App
 
+Used this project as traing project for OJT (Pico Innovaton)
+
 ## Used Technology
 
 - React Js (HOOKS)
