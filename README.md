@@ -1,6 +1,6 @@
 # Todo List App
 
-Used this project as traing project for OJT (Pico Innovaton)
+Used this project as training project for OJT (Pico Innovaton)
 
 ## Used Technology
 
